@@ -537,6 +537,7 @@ class OlfactoryDNA(Base, TimestampMixin):
         Index('ix_olfactory_dna_creation_method', 'creation_method'),
         CheckConstraint('complexity_level >= 1 AND complexity_level <= 10', name='check_dna_complexity'),
         CheckConstraint('innovation_score >= 0 AND innovation_score <= 10', name='check_dna_innovation'),
+        {'extend_existing': True}
     )
 
 
@@ -613,4 +614,5 @@ class ScentPhenotype(Base, TimestampMixin):
                        name='check_phenotype_variant'),
         CheckConstraint("production_status IN ('concept', 'prototype', 'production', 'discontinued')",
                        name='check_phenotype_status'),
+        {'extend_existing': True}
     )

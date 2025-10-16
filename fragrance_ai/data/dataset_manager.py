@@ -51,14 +51,14 @@ class DatasetManager:
                 -- ML features (JSON)
                 state_vector TEXT,
                 action_vector TEXT,
-                reward REAL,
-
-                -- Indexing
-                INDEX idx_user (user_id_hash),
-                INDEX idx_session (session_id),
-                INDEX idx_timestamp (timestamp)
+                reward REAL
             )
         """)
+
+        # Create indexes separately (SQLite doesn't support inline INDEX in CREATE TABLE)
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_user ON user_interactions(user_id_hash)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_session ON user_interactions(session_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_timestamp ON user_interactions(timestamp)")
 
         # Experiment tracking table
         cursor.execute("""

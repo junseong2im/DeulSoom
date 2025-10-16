@@ -13,6 +13,7 @@ import uuid
 class OlfactoryDNAModel(Base):
     """향수 DNA 데이터베이스 모델"""
     __tablename__ = "olfactory_dna"
+    __table_args__ = ({'extend_existing': True},)
 
     # Primary key
     dna_id = Column(String(50), primary_key=True, default=lambda: f"DNA_{uuid.uuid4().hex[:12].upper()}")
@@ -53,6 +54,7 @@ class OlfactoryDNAModel(Base):
 class ScentPhenotypeModel(Base):
     """향수 표현형 데이터베이스 모델"""
     __tablename__ = "scent_phenotypes"
+    __table_args__ = ({'extend_existing': True},)
 
     # Primary key
     phenotype_id = Column(String(50), primary_key=True, default=lambda: f"PHENO_{uuid.uuid4().hex[:10].upper()}")
