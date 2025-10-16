@@ -30,8 +30,16 @@ services:
     environment:
       - ENVIRONMENT=production
       - CORS_ORIGINS=["https://fragrance-ai.com"]
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-change-this-secret-in-production-abc123xyz}
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/fragrance_ai
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
     networks:
       - fragrance-network
+    volumes:
+      - ./data:/app/data
 
   frontend:
     build:
@@ -43,9 +51,57 @@ services:
       - "3000"
     environment:
       - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=https://api.fragrance-ai.com
     networks:
       - fragrance-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: fragrance-ai-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=fragrance_ai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fragrance-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: fragrance-ai-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - fragrance-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  certbot:
+    image: certbot/certbot
+    container_name: fragrance-ai-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 networks:
   fragrance-network:
     driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

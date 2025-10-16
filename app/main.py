@@ -130,8 +130,11 @@ app.add_middleware(WebSecurityMiddleware)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Include routers
-from app.routers import llm_health
+from app.routers import llm_health, auth, rlhf_stream, websocket_rlhf
 app.include_router(llm_health.router)
+app.include_router(auth.router)
+app.include_router(rlhf_stream.router)
+app.include_router(websocket_rlhf.router)
 
 
 # ============================================================================
