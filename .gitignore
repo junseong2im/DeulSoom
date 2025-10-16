@@ -67,7 +67,8 @@ data/*.db
 *.pt
 *.ckpt
 *.safetensors
-models/downloaded/
+models/
+checkpoints/
 fragrance_ai/models/checkpoints/
 
 # Temporary files

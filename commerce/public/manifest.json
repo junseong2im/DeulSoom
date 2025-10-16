@@ -1,0 +1,49 @@
+{
+  "name": "Fragrance AI - AI 향수 조향 플랫폼",
+  "short_name": "Fragrance AI",
+  "description": "AI 기반 맞춤형 향수 제작 및 추천 플랫폼",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "shopping", "beauty"],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "향수 만들기",
+      "short_name": "Create",
+      "description": "새로운 맞춤 향수 만들기",
+      "url": "/create",
+      "icons": [{ "src": "/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "향수 찾기",
+      "short_name": "Find",
+      "description": "AI 추천으로 향수 찾기",
+      "url": "/perfume-finder",
+      "icons": [{ "src": "/icon-96x96.png", "sizes": "96x96" }]
+    }
+  ],
+  "prefer_related_applications": false
+}

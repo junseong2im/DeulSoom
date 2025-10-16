@@ -14,6 +14,8 @@ import logging
 import traceback
 import uuid
 import hashlib
+import os
+import json
 
 # Import fragrance AI modules
 from fragrance_ai.schemas.domain_models import (
@@ -57,14 +59,78 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# CORS Configuration
+# CORS Configuration - Web-only security
+def get_cors_origins():
+    """Get CORS origins from environment variable"""
+    cors_env = os.getenv(
+        "CORS_ORIGINS",
+        '["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003"]'
+    )
+    try:
+        origins = json.loads(cors_env)
+        return origins if isinstance(origins, list) else [str(origins)]
+    except json.JSONDecodeError:
+        logger.warning(f"Invalid CORS_ORIGINS format, using defaults")
+        return ["http://localhost:3000"]
+
+allowed_origins = get_cors_origins()
+logger.info(f"CORS allowed origins: {allowed_origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"],
+    expose_headers=["Content-Length", "X-Request-ID"],
+    max_age=600  # Cache preflight requests for 10 minutes
 )
+
+# Web Security Middleware
+from fastapi import Request
+from fastapi.responses import Response
+from starlette.middleware.base import BaseHTTPMiddleware
+import time
+
+class WebSecurityMiddleware(BaseHTTPMiddleware):
+    """Add web-specific security headers and caching policies"""
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+
+        # Security headers for web deployment
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+
+        # Only add HSTS in production
+        if os.getenv("ENVIRONMENT") == "production":
+            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+
+        # Add request ID for tracking
+        request_id = f"req_{int(time.time() * 1000000)}"
+        response.headers["X-Request-ID"] = request_id
+
+        # Web performance: Caching headers for GET requests
+        if request.method == "GET":
+            # Health checks - short cache
+            if request.url.path in ["/health", "/metrics"]:
+                response.headers["Cache-Control"] = "public, max-age=30"
+            # Static data - longer cache
+            elif request.url.path.startswith("/dna/") and response.status_code == 200:
+                response.headers["Cache-Control"] = "private, max-age=300"
+            # API calls - no cache by default for freshness
+            else:
+                response.headers["Cache-Control"] = "no-cache, must-revalidate"
+
+        return response
+
+app.add_middleware(WebSecurityMiddleware)
+
+# Compression Middleware for web performance
+from fastapi.middleware.gzip import GZipMiddleware
+app.add_middleware(GZipMiddleware, minimum_size=1000)  # Compress responses > 1KB
 
 # Include routers
 from app.routers import llm_health
