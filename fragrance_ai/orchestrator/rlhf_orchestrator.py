@@ -257,7 +257,7 @@ class RLHFOrchestrator:
         if user_id not in self.active_sessions:
             exp_id = self.dataset_manager.start_experiment(
                 user_id=user_id,
-                algorithm=self.rl_engine.algorithm,
+                algorithm=self.algorithm,
                 hyperparameters={"num_options": num_options}
             )
             self.active_sessions[user_id] = {

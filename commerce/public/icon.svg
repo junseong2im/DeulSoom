@@ -1,0 +1,40 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#000000"/>
+
+  <!-- Perfume bottle outline -->
+  <g fill="none" stroke="#FFD700" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Cap -->
+    <rect x="206" y="120" width="100" height="30" rx="5"/>
+    <line x1="226" y1="120" x2="226" y2="100"/>
+    <line x1="286" y1="120" x2="286" y2="100"/>
+    <rect x="216" y="80" width="80" height="20" rx="10"/>
+
+    <!-- Neck -->
+    <path d="M 226 150 L 216 180 L 296 180 L 286 150"/>
+
+    <!-- Body -->
+    <path d="M 216 180 L 196 350 Q 196 380 220 390 L 292 390 Q 316 380 316 350 L 296 180"/>
+
+    <!-- Bottom -->
+    <ellipse cx="256" cy="390" rx="60" ry="15"/>
+  </g>
+
+  <!-- Liquid inside -->
+  <g fill="#FFD700" opacity="0.3">
+    <path d="M 220 280 L 204 350 Q 204 370 220 380 L 292 380 Q 308 370 308 350 L 292 280 Z"/>
+  </g>
+
+  <!-- Sparkle effects -->
+  <g fill="#FFD700" opacity="0.8">
+    <circle cx="240" cy="250" r="4"/>
+    <circle cx="270" cy="220" r="3"/>
+    <circle cx="260" cy="300" r="5"/>
+    <circle cx="285" cy="270" r="3"/>
+  </g>
+
+  <!-- Text -->
+  <text x="256" y="450" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#FFD700" text-anchor="middle">
+    Fragrance AI
+  </text>
+</svg>

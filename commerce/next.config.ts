@@ -75,13 +75,27 @@ export default {
     ];
   },
 
-  // PWA를 위한 서비스 워커 지원
+  // API Proxy (development/production)
   async rewrites() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:8000/:path*'
+        destination: `${apiUrl}/:path*`
       }
     ];
+  },
+
+  // Production optimization
+  swcMinify: true,
+
+  // Output optimization
+  poweredByHeader: false,
+
+  // Compiler options
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn']
+    } : false
   }
 };

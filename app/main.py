@@ -4,9 +4,11 @@ Main FastAPI Application
 Handles DNA creation, evolution with RLHF, and experiment tracking
 """
 
-from fastapi import FastAPI, HTTPException, status, Depends
+from fastapi import FastAPI, HTTPException, status, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 from pydantic import BaseModel, Field, ValidationError
 from typing import Dict, List, Optional, Any
 from datetime import datetime
@@ -16,6 +18,7 @@ import uuid
 import hashlib
 import os
 import json
+import time
 
 # Import fragrance AI modules
 from fragrance_ai.schemas.domain_models import (
@@ -86,12 +89,7 @@ app.add_middleware(
     max_age=600  # Cache preflight requests for 10 minutes
 )
 
-# Web Security Middleware
-from fastapi import Request
-from fastapi.responses import Response
-from starlette.middleware.base import BaseHTTPMiddleware
-import time
-
+# Web Security Middleware Implementation
 class WebSecurityMiddleware(BaseHTTPMiddleware):
     """Add web-specific security headers and caching policies"""
     async def dispatch(self, request: Request, call_next):
@@ -128,9 +126,8 @@ class WebSecurityMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(WebSecurityMiddleware)
 
-# Compression Middleware for web performance
-from fastapi.middleware.gzip import GZipMiddleware
-app.add_middleware(GZipMiddleware, minimum_size=1000)  # Compress responses > 1KB
+# Compression Middleware for web performance (responses > 1KB)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Include routers
 from app.routers import llm_health
