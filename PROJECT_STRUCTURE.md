@@ -1,270 +1,414 @@
-# Fragrance AI - 프로젝트 구조 가이드
+# DeulSoom - 프로젝트 구조 가이드
 
-## 개요
+## 빠른 시작 가이드
 
-이 문서는 Fragrance AI 프로젝트의 전체 구조와 각 디렉토리/파일의 역할을 설명합니다.
+### 새로운 팀원을 위한 3분 가이드
+1. **학습하려면**: `scripts/training/` 확인
+2. **API 수정하려면**: `app/` 또는 `fragrance_ai/api/` 확인
+3. **테스트 돌리려면**: `tests/` 에서 실행
+4. **배포하려면**: `docs/deployment/` 읽고 `scripts/deployment/` 실행
+5. **문제 해결하려면**: `docs/operations/RUNBOOK.md` 참조
+
+---
 
 ## 전체 디렉토리 구조
 
 ```
-fragrance_ai/
-├── .benchmarks/              # 성능 벤치마크 결과
-├── .claude/                  # Claude Code 설정
-│   └── settings.local.json   # 로컬 Claude 설정
-├── .git/                     # Git 버전 관리
-├── .github/                  # GitHub 워크플로우 및 템플릿
-├── .pytest_cache/            # pytest 캐시
-├── airflow/                  # Apache Airflow DAGs
-│   └── dags/
-│       └── fragrance_data_pipeline.py
-├── alembic/                  # 데이터베이스 마이그레이션
-│   └── versions/
-├── checkpoints/              # 훈련된 모델 체크포인트
-├── configs/                  # 설정 파일들
-│   └── optimizer_examples.json
-├── data/                     # 데이터 저장소
-├── docker/                   # Docker 관련 파일
-├── fragrance_ai/             # 메인 애플리케이션 패키지
-├── frontend/                 # 프론트엔드 (React)
-├── haproxy/                  # HAProxy 로드 밸런서 설정
-├── logs/                     # 로그 파일
-├── migrations/               # 추가 마이그레이션
-├── models/                   # 저장된 AI 모델
-├── monitoring/               # 모니터링 설정 (Prometheus, Grafana)
-├── nginx/                    # Nginx 설정
-├── performance_graphs/       # 성능 테스트 결과 그래프
-├── scripts/                  # 유틸리티 스크립트
-└── tests/                    # 테스트 코드
+DeulSoom/
+├── scripts/              # 실행 스크립트 (학습, 설정, 배포)
+├── tests/                # 테스트 코드 (단위, 통합, 성능)
+├── docs/                 # 문서 (개발, 배포, 운영)
+├── data/                 # 데이터 (DB, 테스트 데이터)
+├── models/               # 모델 체크포인트
+├── docker/               # Docker 설정
+├── services/             # 백그라운드 서비스
+├── logs/                 # 로그 파일
+│
+├── app/                  # FastAPI 프로덕션 앱
+├── fragrance_ai/         # 핵심 비즈니스 로직
+├── archive/              # 레거시 코드 보관
+│
+└── (설정 파일들)         # setup.py, pyproject.toml, etc.
 ```
-
-## 메인 애플리케이션 구조 (`fragrance_ai/`)
-
-### API 레이어 (`fragrance_ai/api/`)
-웹 API 및 HTTP 인터페이스를 담당하는 레이어
-
-```
-api/
-├── main.py                   # FastAPI 메인 애플리케이션
-├── main_legacy.py            # 레거시 API (호환성 유지)
-├── auth.py                   # API 인증 시스템
-├── user_auth.py              # 사용자 인증 라우터
-├── dependencies.py           # API 의존성 주입
-├── error_handlers.py         # 글로벌 에러 핸들링
-├── external_services.py      # 외부 서비스 통합
-├── middleware.py             # HTTP 미들웨어
-├── schemas.py                # Pydantic 데이터 스키마
-├── versioning.py             # API 버전 관리
-└── routes/                   # API 엔드포인트 라우터
-    ├── __init__.py
-    ├── admin.py              # 관리자 API
-    ├── generation.py         # 향수 레시피 생성 API
-    ├── monitoring.py         # 모니터링 API
-    ├── search.py             # 검색 API
-    └── training.py           # 모델 훈련 API
-```
-
-### 핵심 비즈니스 로직 (`fragrance_ai/core/`)
-애플리케이션의 핵심 기능을 담당하는 레이어
-
-```
-core/
-├── config.py                 # 애플리케이션 설정 관리
-├── vector_store.py           # 벡터 데이터베이스 관리
-├── auth.py                   # 핵심 인증 시스템
-├── advanced_logging.py       # 고급 로깅 시스템
-├── comprehensive_monitoring.py # 종합 모니터링
-└── intelligent_cache.py      # 지능형 캐싱 시스템
-```
-
-### AI 모델 레이어 (`fragrance_ai/models/`)
-AI 모델 정의 및 관리
-
-```
-models/
-├── base.py                   # 모델 베이스 클래스
-├── embedding.py              # 임베딩 모델 (Sentence-BERT)
-└── generator.py              # 향수 레시피 생성 모델
-```
-
-### 서비스 레이어 (`fragrance_ai/services/`)
-비즈니스 로직 구현
-
-```
-services/
-├── search_service.py         # 검색 비즈니스 로직
-├── generation_service.py     # 생성 비즈니스 로직
-├── monitoring_service.py     # 모니터링 서비스
-└── cache_service.py          # 캐싱 서비스
-```
-
-### 모델 훈련 시스템 (`fragrance_ai/training/`)
-AI 모델 훈련 관련 코드
-
-```
-training/
-├── peft_trainer.py           # PEFT (LoRA) 훈련
-└── advanced_optimizer.py     # 고급 옵티마이저
-```
-
-### 평가 시스템 (`fragrance_ai/evaluation/`)
-모델 성능 평가
-
-```
-evaluation/
-└── metrics.py                # 평가 메트릭
-```
-
-### 데이터베이스 레이어 (`fragrance_ai/database/`)
-데이터 영속성 관리
-
-```
-database/
-├── models.py                 # SQLAlchemy ORM 모델
-└── base.py                   # 데이터베이스 연결 관리
-```
-
-### 관리자 인터페이스 (`fragrance_ai/admin/`)
-시스템 관리 기능
-
-```
-admin/
-├── auth.py                   # 관리자 인증
-└── dashboard.py              # 관리자 대시보드
-```
-
-## 스크립트 및 유틸리티 (`scripts/`)
-
-```
-scripts/
-├── train_model.py            # 모델 훈련 스크립트
-├── evaluate_model.py         # 모델 평가 스크립트
-├── deploy.sh                 # 배포 스크립트
-└── deploy_advanced.py        # 고급 배포 스크립트
-```
-
-## 테스트 코드 (`tests/`)
-
-```
-tests/
-├── performance/              # 성능 테스트
-└── test_comprehensive_auth.py # 종합 인증 테스트
-```
-
-## 인프라 및 배포
-
-### Docker 설정 (`docker/`)
-컨테이너화 관련 파일들
-
-### 모니터링 (`monitoring/`)
-Prometheus, Grafana 설정 파일들
-
-### 로드 밸런싱 (`haproxy/`, `nginx/`)
-트래픽 분산 및 리버스 프록시 설정
-
-## 설정 파일들
-
-### 환경 설정
-- `.env` - 개발 환경 변수
-- `.env.example` - 환경 변수 예제
-- `.env.production` - 프로덕션 환경 변수
-- `.env.production.template` - 프로덕션 환경 변수 템플릿
-
-### Docker 설정
-- `Dockerfile` - 메인 Docker 이미지
-- `docker-compose.yml` - 개발용 Docker Compose
-- `docker-compose.production.yml` - 프로덕션용 Docker Compose
-- `docker-compose.scale.yml` - 스케일링용 Docker Compose
-
-### Python 설정
-- `requirements.txt` - 기본 Python 의존성
-- `requirements-dev.txt` - 개발용 의존성
-- `requirements-prod.txt` - 프로덕션용 의존성
-- `requirements-minimal.txt` - 최소 의존성
-- `pyproject.toml` - Python 프로젝트 설정
-- `setup.py` - 패키지 설정
-
-### 기타 설정
-- `pytest.ini` - pytest 설정
-- `alembic.ini` - 데이터베이스 마이그레이션 설정
-- `.gitignore` - Git 무시 파일 목록
-
-## 아키텍처 패턴
-
-### 레이어드 아키텍처
-1. **API Layer** - HTTP 인터페이스 및 라우팅
-2. **Service Layer** - 비즈니스 로직
-3. **Model Layer** - AI 모델 및 데이터 모델
-4. **Data Layer** - 데이터 영속성
-
-### 의존성 방향
-- 상위 레이어는 하위 레이어에만 의존
-- 하위 레이어는 상위 레이어를 알지 못함
-- 인터페이스를 통한 의존성 역전
-
-### 모듈화
-- 각 모듈은 단일 책임 원칙 준수
-- 느슨한 결합, 높은 응집도
-- 재사용 가능한 컴포넌트 설계
-
-## 코딩 컨벤션
-
-### 파일 명명 규칙
-- Python 파일: `snake_case.py`
-- 클래스명: `PascalCase`
-- 함수/변수명: `snake_case`
-- 상수명: `UPPER_SNAKE_CASE`
-
-### 디렉토리 구조 원칙
-- 기능별 그룹화
-- 레이어별 분리
-- 의존성 방향 고려
-- 확장성 고려
-
-### 문서화 표준
-- 모든 모듈에 docstring 필수
-- 복잡한 함수는 상세 설명 추가
-- 타입 힌트 필수
-- 주석은 한국어 또는 영어
-
-## 개발 가이드라인
-
-### 새 기능 추가 시
-1. 적절한 레이어에 코드 배치
-2. 테스트 코드 작성
-3. 문서 업데이트
-4. 설정 파일 확인
-
-### 성능 고려사항
-- 비동기 처리 활용
-- 캐싱 전략 적용
-- 데이터베이스 쿼리 최적화
-- AI 모델 배치 처리
-
-### 보안 고려사항
-- 입력 검증 및 새니타이제이션
-- 인증/인가 체크
-- 민감 정보 암호화
-- HTTPS 사용
-
-## 배포 및 운영
-
-### 환경별 설정
-- Development: 로컬 개발 환경
-- Staging: 테스트 환경
-- Production: 실제 운영 환경
-
-### 모니터링 포인트
-- API 응답 시간
-- 에러율
-- 시스템 리소스 사용률
-- AI 모델 성능 지표
-
-### 백업 전략
-- 데이터베이스 정기 백업
-- 모델 체크포인트 보관
-- 설정 파일 버전 관리
-- 로그 파일 아카이빙
 
 ---
 
-이 구조는 확장 가능하고 유지보수가 용이하도록 설계되었습니다. 새로운 기능 추가나 기존 기능 수정 시 이 가이드를 참조하여 일관성을 유지해주세요.
+## 1. scripts/ - 실행 스크립트
+
+모든 실행 가능한 스크립트가 모여있는 곳입니다.
+
+### scripts/training/ - AI 모델 학습
+```
+train_universal_model.py     # UniversalFragranceGenerator 학습
+train_ppo_real.py            # PPO 강화학습
+train_real_fragrance.py      # 향수 생성 모델 학습
+train_validator.py           # 검증 모델 학습
+```
+
+**사용법**:
+```bash
+cd scripts/training
+python train_universal_model.py --batch_size 16 --max_epochs 100
+```
+
+### scripts/setup/ - 초기 설정
+```
+setup_database.py            # 데이터베이스 초기화
+load_vector_data.py          # 벡터 데이터 로드
+```
+
+**사용법**:
+```bash
+cd scripts/setup
+python setup_database.py
+python load_vector_data.py
+```
+
+### scripts/validation/ - 검증
+```
+verify_rlhf.py              # RLHF 검증
+```
+
+### scripts/deployment/ - 배포
+```
+deploy.sh                   # 배포 스크립트
+setup-ssl.sh                # SSL 설정
+```
+
+**사용법**:
+```bash
+cd scripts/deployment
+bash deploy.sh production
+```
+
+### scripts/ops/ - 운영
+```
+CLEANUP_SCRIPT.sh           # 정리 스크립트
+```
+
+---
+
+## 2. tests/ - 테스트 코드
+
+모든 테스트가 체계적으로 분류되어 있습니다.
+
+```
+tests/
+├── integration/            # 통합 테스트
+│   ├── test_integration_complete.py
+│   └── test_rlhf_complete.py
+├── performance/            # 성능 테스트
+│   ├── run_performance_tests.py
+│   └── test_metrics_server.py
+├── rl/                     # 강화학습 테스트
+│   ├── test_rl_smoke.py
+│   ├── test_rl_smoke_new.py
+│   ├── test_moga_real.py
+│   └── test_moga_stability.py
+├── gpu/                    # GPU 테스트
+│   └── test_qwen_gpu.py
+├── html/                   # HTML 테스트 파일
+│   ├── ai_test.html
+│   ├── chat.html
+│   └── fragrance_test.html
+├── run_tests.py            # 전체 테스트 실행
+├── run_exception_tests.py  # 예외 처리 테스트
+├── run_tests.sh            # 테스트 쉘 스크립트
+└── smoke_test_api.sh       # API 스모크 테스트
+```
+
+**사용법**:
+```bash
+cd tests
+python run_tests.py                    # 전체 테스트
+python integration/test_integration_complete.py  # 통합 테스트만
+python performance/run_performance_tests.py      # 성능 테스트만
+```
+
+---
+
+## 3. docs/ - 문서
+
+모든 문서가 목적별로 분류되어 있습니다.
+
+```
+docs/
+├── development/            # 개발 관련 문서 (14개)
+│   ├── DEVELOPMENT_STATUS.md
+│   ├── IMPLEMENTATION_RECORD.md
+│   ├── PROJECT_CLEANUP_ANALYSIS.md
+│   └── ...
+├── deployment/             # 배포 가이드 (9개)
+│   ├── DEPLOYMENT_GUIDE.md
+│   ├── RELEASE_STRATEGY.md
+│   ├── ROLLBACK_OPERATIONS_SUMMARY.md
+│   └── ...
+├── operations/             # 운영 가이드 (15개)
+│   ├── RUNBOOK.md                    # 운영 매뉴얼 (시작점)
+│   ├── OPERATIONS_GUIDE.md
+│   ├── PRODUCTION_CHECKLIST.md
+│   └── ...
+└── archive/                # 구버전 문서 (9개)
+    ├── GO_NOGO_GATE_GUIDE.md
+    └── ...
+```
+
+**읽는 순서**:
+1. 신입 개발자: `docs/development/DEVELOPMENT_STATUS.md`
+2. 배포 담당자: `docs/deployment/DEPLOYMENT_GUIDE.md`
+3. 운영 담당자: `docs/operations/RUNBOOK.md`
+
+---
+
+## 4. data/ - 데이터
+
+```
+data/
+├── databases/              # 데이터베이스 파일
+│   ├── fragrance.db
+│   ├── fragrance_ai.db
+│   └── fragrance_db.sqlite
+└── test/                   # 테스트 데이터
+    ├── test_dna_fast.json
+    ├── test_feedback.json
+    ├── test_ppo.json
+    └── test_reinforce.json
+```
+
+---
+
+## 5. models/ - 모델 체크포인트
+
+```
+models/
+└── checkpoints/            # 학습된 모델 체크포인트
+    ├── best_model.pth
+    ├── fragrance_model_20250924_222018.pth
+    ├── rlhf_checkpoint_ep10.pth
+    └── ... (총 11개)
+```
+
+**사용법**:
+- 최신 모델: `best_model.pth`
+- 특정 버전: 날짜 포함된 파일명 참조
+
+---
+
+## 6. docker/ - Docker 설정
+
+```
+docker/
+├── compose/                # docker-compose 파일
+│   ├── docker-compose.yml           # 개발용
+│   ├── docker-compose.production.yml  # 프로덕션
+│   ├── docker-compose.scale.yml      # 스케일링
+│   └── ... (총 8개)
+└── dockerfiles/            # Dockerfile
+    ├── Dockerfile
+    ├── Dockerfile.production
+    └── Dockerfile.cloud
+```
+
+**사용법**:
+```bash
+# 개발 환경
+docker-compose -f docker/compose/docker-compose.yml up
+
+# 프로덕션 환경
+docker-compose -f docker/compose/docker-compose.production.yml up -d
+```
+
+---
+
+## 7. app/ - FastAPI 프로덕션 앱
+
+프로덕션 환경에서 실행되는 메인 애플리케이션입니다.
+
+```
+app/
+├── main.py                 # FastAPI 앱 엔트리포인트
+├── routers/                # API 라우터
+├── schemas/                # Pydantic 스키마
+└── ...
+```
+
+---
+
+## 8. fragrance_ai/ - 핵심 비즈니스 로직
+
+프로젝트의 핵심 코드가 들어있습니다.
+
+```
+fragrance_ai/
+├── api/                    # API 레이어
+│   ├── main.py            # API 메인
+│   └── routes/            # API 엔드포인트
+├── core/                   # 핵심 설정
+│   ├── config.py          # 설정 관리
+│   └── auth.py            # 인증
+├── models/                 # AI 모델
+│   ├── deep_learning_architecture.py  # UniversalFragranceGenerator
+│   ├── conversation_llm.py            # 대화형 LLM
+│   ├── advanced_generator.py          # LoRA 생성기
+│   ├── embedding.py                   # 임베딩
+│   └── rag_system.py                  # RAG
+├── database/               # 데이터베이스
+│   ├── models.py          # SQLAlchemy 모델
+│   ├── connection.py      # DB 연결
+│   └── schema.py          # DB 스키마
+├── services/               # 비즈니스 로직
+└── training/               # 학습 로직
+```
+
+---
+
+## 9. services/ - 백그라운드 서비스
+
+```
+services/
+└── ai_service.py           # AI 서비스
+```
+
+---
+
+## 10. archive/ - 레거시 코드
+
+사용하지 않지만 참고용으로 보관하는 코드입니다.
+
+```
+archive/
+├── removed_files/          # 제거된 파일
+├── legacy_apis/            # 레거시 API
+├── data_collection/        # 데이터 수집 스크립트
+└── tests_legacy/           # 레거시 테스트
+```
+
+---
+
+## 일반적인 작업 시나리오
+
+### 새 기능 추가
+1. `fragrance_ai/models/` 에 모델 추가
+2. `app/routers/` 에 API 엔드포인트 추가
+3. `tests/` 에 테스트 추가
+4. `docs/development/` 에 문서 작성
+
+### 모델 학습
+1. `scripts/training/` 에서 학습 스크립트 실행
+2. 학습된 모델은 자동으로 `models/checkpoints/` 에 저장
+3. TensorBoard 로그는 `runs/` 에 저장
+
+### 배포
+1. `docs/deployment/DEPLOYMENT_GUIDE.md` 읽기
+2. `scripts/deployment/deploy.sh` 실행
+3. `docs/operations/PRODUCTION_CHECKLIST.md` 확인
+
+### 문제 해결
+1. `logs/` 에서 로그 확인
+2. `docs/operations/RUNBOOK.md` 참조
+3. 테스트: `tests/run_tests.py` 실행
+
+---
+
+## 코딩 컨벤션
+
+### 파일명
+- Python: `snake_case.py`
+- 클래스: `PascalCase`
+- 함수/변수: `snake_case`
+- 상수: `UPPER_SNAKE_CASE`
+
+### 디렉토리 배치
+- 실행 스크립트 -> `scripts/`
+- 테스트 코드 -> `tests/`
+- 비즈니스 로직 -> `fragrance_ai/`
+- API 엔드포인트 -> `app/routers/` 또는 `fragrance_ai/api/routes/`
+
+### 문서화
+- 모든 함수에 docstring 작성
+- 타입 힌트 필수
+- 복잡한 로직은 주석 추가
+
+---
+
+## Git 워크플로우
+
+### 브랜치 전략
+- `master`: 프로덕션 코드
+- `develop`: 개발 중인 코드
+- `feature/*`: 새 기능
+- `hotfix/*`: 긴급 수정
+
+### 커밋 메시지
+```
+type: Subject
+
+Body (optional)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+**타입**:
+- `feat`: 새 기능
+- `fix`: 버그 수정
+- `refactor`: 리팩토링
+- `docs`: 문서
+- `test`: 테스트
+- `chore`: 기타
+
+---
+
+## 핵심 의존성
+
+### Python 패키지
+- FastAPI: 웹 프레임워크
+- SQLAlchemy: ORM
+- PyTorch: 딥러닝
+- Transformers: LLM
+- Sentence-BERT: 임베딩
+- Pydantic: 데이터 검증
+
+### 인프라
+- PostgreSQL: 메인 데이터베이스
+- SQLite: 개발 데이터베이스
+- Redis: 캐시
+- Nginx: 리버스 프록시
+- Docker: 컨테이너화
+
+---
+
+## 문제 해결 체크리스트
+
+### API 오류
+1. `logs/api_server.log` 확인
+2. `tests/smoke_test_api.sh` 실행
+3. `docs/operations/RUNBOOK.md` 참조
+
+### 데이터베이스 오류
+1. `data/databases/` 확인
+2. `scripts/setup/setup_database.py` 재실행
+3. Alembic 마이그레이션 확인
+
+### 모델 오류
+1. `models/checkpoints/` 에 모델 파일 존재 확인
+2. `scripts/training/` 에서 재학습
+3. `tests/integration/` 테스트 실행
+
+---
+
+## 연락처 및 리소스
+
+### 문서
+- 개발: `docs/development/`
+- 배포: `docs/deployment/`
+- 운영: `docs/operations/`
+
+### 중요한 파일
+- 운영 매뉴얼: `docs/operations/RUNBOOK.md`
+- 배포 가이드: `docs/deployment/DEPLOYMENT_GUIDE.md`
+- 프로젝트 가이드: `PROJECT_GUIDE.md`
+
+---
+
+**마지막 업데이트**: 2025-10-19
+**프로젝트 상태**: 활성 개발 중
