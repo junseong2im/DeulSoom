@@ -80,6 +80,176 @@ DeulSoom/
 - `/api/v2/admin/*` - 관리자 기능
 - `/api/v2/public/*` - 공개 레시피
 
+### 모듈 의존성 관계도
+
+```mermaid
+graph TB
+    %% 외부 인터페이스
+    Client[클라이언트<br/>React/Next.js]
+
+    %% API 레이어
+    API[API 레이어<br/>fragrance_ai/api/]
+    API_Main[main.py]
+    API_Routes[routes/<br/>dna_evolution.py<br/>generation.py<br/>auth.py<br/>admin.py]
+
+    %% 서비스 레이어
+    Services[서비스 레이어<br/>fragrance_ai/services/]
+    EvolutionSvc[evolution_service.py]
+    GenerationSvc[generation_service.py]
+    OrchestratorSvc[orchestrator_service.py]
+
+    %% 모델 레이어
+    Models[AI 모델<br/>fragrance_ai/models/]
+    DLModel[deep_learning_architecture.py<br/>UniversalFragranceGenerator]
+    LLM[conversation_llm.py<br/>Qwen/Mistral/Llama]
+    RAG[rag_system.py]
+    Embedding[embedding.py]
+
+    %% 학습 레이어
+    Training[학습 알고리즘<br/>fragrance_ai/training/]
+    MOGA[moga_optimizer_stable.py]
+    PPO[ppo_engine.py]
+    RLHF[qwen_rlhf.py<br/>rlhf_complete.py]
+
+    %% 평가 레이어
+    Eval[평가 시스템<br/>fragrance_ai/evaluation/]
+    Objectives[objectives.py]
+    Metrics[metrics.py]
+    AdvEval[advanced_evaluator.py]
+
+    %% 데이터베이스 레이어
+    DB[데이터베이스<br/>fragrance_ai/database/]
+    DBModels[models.py<br/>SQLAlchemy ORM]
+    DBConn[connection.py]
+
+    %% 코어 레이어
+    Core[핵심 설정<br/>fragrance_ai/core/]
+    Config[config.py]
+    Auth[auth.py]
+    Exceptions[exceptions.py]
+
+    %% 외부 시스템
+    PostgreSQL[(PostgreSQL)]
+    Redis[(Redis)]
+    ChromaDB[(ChromaDB)]
+
+    %% 연결 관계
+    Client -->|HTTP Request| API
+    API --> API_Main
+    API_Main --> API_Routes
+
+    API_Routes -->|비즈니스 로직 호출| Services
+    Services --> EvolutionSvc
+    Services --> GenerationSvc
+    Services --> OrchestratorSvc
+
+    EvolutionSvc -->|모델 사용| Models
+    GenerationSvc -->|모델 사용| Models
+    OrchestratorSvc -->|모델 사용| Models
+
+    Models --> DLModel
+    Models --> LLM
+    Models --> RAG
+    Models --> Embedding
+
+    DLModel -->|학습 알고리즘| Training
+    Training --> MOGA
+    Training --> PPO
+    Training --> RLHF
+
+    MOGA -->|평가| Eval
+    PPO -->|평가| Eval
+    RLHF -->|평가| Eval
+
+    Eval --> Objectives
+    Eval --> Metrics
+    Eval --> AdvEval
+
+    Services -->|데이터 CRUD| DB
+    Models -->|데이터 조회| DB
+    DB --> DBModels
+    DB --> DBConn
+
+    API -->|설정 참조| Core
+    Services -->|설정 참조| Core
+    Models -->|설정 참조| Core
+    Core --> Config
+    Core --> Auth
+    Core --> Exceptions
+
+    DBConn -->|연결| PostgreSQL
+    API -->|캐싱| Redis
+    RAG -->|벡터 검색| ChromaDB
+
+    %% 스타일
+    classDef apiClass fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    classDef serviceClass fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef modelClass fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef trainingClass fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef evalClass fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef dbClass fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    classDef coreClass fill:#e0f2f1,stroke:#004d40,stroke-width:2px
+
+    class API,API_Main,API_Routes apiClass
+    class Services,EvolutionSvc,GenerationSvc,OrchestratorSvc serviceClass
+    class Models,DLModel,LLM,RAG,Embedding modelClass
+    class Training,MOGA,PPO,RLHF trainingClass
+    class Eval,Objectives,Metrics,AdvEval evalClass
+    class DB,DBModels,DBConn dbClass
+    class Core,Config,Auth,Exceptions coreClass
+```
+
+### 데이터 흐름도
+
+```mermaid
+sequenceDiagram
+    participant C as 클라이언트
+    participant A as API Layer
+    participant S as Service Layer
+    participant M as Model Layer
+    participant E as Evaluation
+    participant D as Database
+
+    %% DNA 생성 플로우
+    Note over C,D: DNA 생성 요청
+    C->>A: POST /api/v2/dna/create
+    A->>S: evolution_service.create_dna()
+    S->>M: UniversalFragranceGenerator.generate()
+    M->>E: calculate_objectives()
+    E-->>M: 평가 결과
+    M-->>S: 생성된 DNA
+    S->>D: 저장
+    D-->>S: 저장 완료
+    S-->>A: DNA ID 반환
+    A-->>C: 201 Created
+
+    %% 진화 옵션 생성 플로우
+    Note over C,D: 진화 옵션 생성
+    C->>A: POST /api/v2/dna/evolve/options
+    A->>S: evolution_service.generate_options()
+    S->>M: PPO/MOGA 알고리즘 실행
+    M->>E: calculate_diversity()
+    E-->>M: 다양성 점수
+    M-->>S: 3개 옵션 생성
+    S->>D: 실험 저장
+    D-->>S: 실험 ID
+    S-->>A: 옵션 리스트 반환
+    A-->>C: 200 OK
+
+    %% 피드백 처리 플로우
+    Note over C,D: 사용자 피드백
+    C->>A: POST /api/v2/dna/evolve/feedback
+    A->>S: evolution_service.process_feedback()
+    S->>D: 피드백 저장
+    D-->>S: 저장 완료
+    S->>M: RLHF 학습 트리거
+    M->>E: reward 계산
+    E-->>M: reward 값
+    M-->>S: 학습 완료
+    S-->>A: 처리 결과
+    A-->>C: 200 OK
+```
+
 ---
 
 ## 개발 환경 설정
