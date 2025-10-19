@@ -182,13 +182,13 @@ graph TB
     RAG -->|벡터 검색| ChromaDB
 
     %% 스타일
-    classDef apiClass fill:#e1f5ff,stroke:#01579b,stroke-width:2px
-    classDef serviceClass fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef modelClass fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
-    classDef trainingClass fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    classDef evalClass fill:#fce4ec,stroke:#880e4f,stroke-width:2px
-    classDef dbClass fill:#fff9c4,stroke:#f57f17,stroke-width:2px
-    classDef coreClass fill:#e0f2f1,stroke:#004d40,stroke-width:2px
+    classDef apiClass fill:#e1f5ff,stroke:#01579b,stroke-width:2px,color:#000
+    classDef serviceClass fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+    classDef modelClass fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px,color:#000
+    classDef trainingClass fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    classDef evalClass fill:#fce4ec,stroke:#880e4f,stroke-width:2px,color:#000
+    classDef dbClass fill:#fff9c4,stroke:#f57f17,stroke-width:2px,color:#000
+    classDef coreClass fill:#e0f2f1,stroke:#004d40,stroke-width:2px,color:#000
 
     class API,API_Main,API_Routes apiClass
     class Services,EvolutionSvc,GenerationSvc,OrchestratorSvc serviceClass
