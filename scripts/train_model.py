@@ -25,7 +25,7 @@ from fragrance_ai.training.peft_trainer import PEFTTrainer
 from fragrance_ai.models.generator import FragranceGenerator
 from fragrance_ai.models.embedding import FragranceEmbedding
 from fragrance_ai.utils.data_loader import DatasetLoader
-from fragrance_ai.evaluation.metrics import EvaluationMetrics
+from fragrance_ai.evaluationuation.metrics import EvaluationMetrics
 
 # 로깅 설정
 logging.basicConfig(

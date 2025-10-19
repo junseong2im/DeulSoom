@@ -24,7 +24,7 @@ from fragrance_ai.models.generator import FragranceGenerator
 from fragrance_ai.models.embedding import FragranceEmbedding
 from fragrance_ai.services.search_service import SearchService
 from fragrance_ai.services.generation_service import GenerationService
-from fragrance_ai.evaluation.metrics import EvaluationMetrics, QualityAssessment
+from fragrance_ai.evaluationuation.metrics import EvaluationMetrics, QualityAssessment
 from fragrance_ai.utils.data_loader import DatasetLoader
 
 # 로깅 설정

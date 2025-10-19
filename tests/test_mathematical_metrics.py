@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from fragrance_ai.evaluation.mathematical_metrics import (
+from fragrance_ai.evaluationuation.mathematical_metrics import (
     MathematicalMetrics, MetricType, StatisticalResult, MetricResult
 )
 

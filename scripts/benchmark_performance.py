@@ -32,7 +32,7 @@ from fragrance_ai.models.embedding import FragranceEmbedding
 from fragrance_ai.models.generator import FragranceGenerator
 from fragrance_ai.services.search_service import SearchService
 from fragrance_ai.services.generation_service import GenerationService
-from fragrance_ai.evaluation.mathematical_metrics import MathematicalMetrics
+from fragrance_ai.evaluationuation.mathematical_metrics import MathematicalMetrics
 from fragrance_ai.utils.data_loader import DatasetLoader
 
 logging.basicConfig(level=logging.INFO)

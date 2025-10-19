@@ -23,7 +23,7 @@ from ..core.config import settings
 import logging
 logger = logging.getLogger(__name__)
 from ..core.exceptions import FragranceAIException, SystemException, ErrorCode
-# from ..core.exceptions_unified import (
+# from ..core.exceptions import (
 #     FragranceAIException as UnifiedException,
 #     APIException,
 #     ModelException,
@@ -275,6 +275,7 @@ from .routes.agentic import router as agentic_router
 from .routes.customer_service import router as customer_service_router
 from .routes.admin_auth import router as admin_auth_router  # 관리자 인증 라우터
 from .routes.generation_with_ai import router as ai_generation_router  # AI 생성 라우터 추가
+from .routes.dna_evolution import router as dna_evolution_router  # DNA Evolution (migrated from app/main.py)
 
 app.include_router(auth_router, prefix="/api/v2")
 app.include_router(public_recipes_router, prefix="/api/v2")
@@ -283,6 +284,7 @@ app.include_router(agentic_router, prefix="/api/v2", tags=["AI Orchestrator"])  
 app.include_router(customer_service_router, tags=["Customer Service"])  # Customer service routes
 app.include_router(admin_auth_router, tags=["Admin Authentication"])  # 관리자 세션 기반 인증
 app.include_router(ai_generation_router, prefix="/api/v1/ai", tags=["AI Generation"])  # DEAP/RLHF AI 라우터
+app.include_router(dna_evolution_router, prefix="/api/v2", tags=["DNA Evolution"])  # DNA/RLHF Evolution
 
 
 # 배치 처리 함수들

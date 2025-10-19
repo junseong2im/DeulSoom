@@ -7,7 +7,7 @@ import json
 from ..core.vector_store import VectorStore
 from ..models.embedding import AdvancedKoreanFragranceEmbedding
 from ..core.config import settings
-from ..core.exceptions_unified import (
+from ..core.exceptions import (
     VectorStoreException,
     ModelException,
     handle_exceptions_async

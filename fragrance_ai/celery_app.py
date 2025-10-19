@@ -21,7 +21,7 @@ celery_app = Celery(
         'fragrance_ai.services.generation_service',
         'fragrance_ai.services.search_service',
         'fragrance_ai.training.peft_trainer',
-        'fragrance_ai.evaluation.advanced_evaluator'
+        'fragrance_ai.evaluationuation.advanced_evaluator'
     ]
 )
 
@@ -45,7 +45,7 @@ celery_app.conf.update(
         'fragrance_ai.services.generation_service.*': {'queue': 'generation'},
         'fragrance_ai.services.search_service.*': {'queue': 'search'},
         'fragrance_ai.training.*': {'queue': 'training'},
-        'fragrance_ai.evaluation.*': {'queue': 'evaluation'},
+        'fragrance_ai.evaluationuation.*': {'queue': 'evaluation'},
     },
 
     # 워커 설정

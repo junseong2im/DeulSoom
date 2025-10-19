@@ -23,7 +23,7 @@ from fragrance_ai.core.vector_store import VectorStore
 from fragrance_ai.database.connection import get_db_session
 from fragrance_ai.services.search_service import SearchService
 from fragrance_ai.services.generation_service import GenerationService
-from fragrance_ai.evaluation.advanced_evaluator import AdvancedModelEvaluator
+from fragrance_ai.evaluationuation.advanced_evaluator import AdvancedModelEvaluator
 from fragrance_ai.utils.web_scraper import FragranceDataScraper
 from fragrance_ai.utils.data_cleaner import FragranceDataCleaner
 
